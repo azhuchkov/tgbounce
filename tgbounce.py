@@ -42,18 +42,18 @@ class TgBounce:
 
             session = Session('main', json_tree['bounces'])
 
-        cred = configparser.ConfigParser()
-        cred.read(f'{self.root_dir}/cred.ini')
+        config = configparser.ConfigParser()
+        config.read(f'{self.root_dir}/config.ini')
 
-        conf = cred['main']
+        cred = config['credentials']
 
         tg = Telegram(
-            api_id=int(conf['api_id']),
-            api_hash=conf['api_hash'],
-            phone=conf['phone_number'],
+            api_id=int(cred['api_id']),
+            api_hash=cred['api_hash'],
+            phone=cred['phone_number'],
             use_message_database=False,
             use_secret_chats=False,
-            database_encryption_key=conf['enc_key'],
+            database_encryption_key=cred['enc_key'],
             files_directory=f'{self.root_dir}/session/',
         )
         tg.login()
