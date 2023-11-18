@@ -100,8 +100,8 @@ class Message:
   def log(self):
     print(json.dumps(self.__msg, indent=2, ensure_ascii=False))
 
-  def reply(self, text):
-    raise Error('Not implemented')    
+  def reply(self, text, receiver):
+    self.__tg.send_message(receiver or self.chat_id, text)
 
 class Session:
   def __init__(self, name, rules):
