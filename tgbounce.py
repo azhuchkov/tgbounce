@@ -59,8 +59,7 @@ class TgBounce:
       )
       tg.login()
       tg.add_message_handler(
-        lambda e: session.on_message(
-          Message(tg, MSG_SLCTR.input_value(e).first())))
+        lambda e: session.on_message(Message.build(e, tg)))
       tg.idle()
 
 class Message:
@@ -68,6 +67,10 @@ class Message:
     self.__tg = tg
     self.__msg = msg
     self.__dict__.update(msg)
+
+  @staticmethod
+  def build(event, tg):
+    return Message(tg, MSG_SLCTR.input_value(event).first())
 
   def __getitem__(self, item):
     return self.__msg[item]
