@@ -100,6 +100,15 @@ class Message:
   def reply(self, text, receiver):
     self.__tg.send_message(receiver or self.chat_id, text)
 
+  def __call__(self, method, args):
+    fn = getattr(self, method)
+    if isinstance(args, dict):
+      fn(**args)
+    elif isinstance(args, list):
+      fn(*args)
+    else:
+      fn(args)
+
 class Session:
   def __init__(self, name, rules):
     self.name = name
@@ -116,12 +125,12 @@ class Session:
         elif value != msg[attr]:
           break
       else:
-        for mname, args in rule['do'].items():
-          method = getattr(msg, mname)
-          if isinstance(args, dict):
-            method(**args)
-          else:
-            method(*args)
+        do = rule['do']
+        if isinstance(do, str):
+          msg(do, [])
+        else:
+          for method, args in do.items():
+            msg(method, args)
 
 if __name__ == '__main__':
     data_path = sys.argv[1] if len(sys.argv) > 1 \
