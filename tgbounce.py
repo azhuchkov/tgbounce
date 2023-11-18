@@ -39,7 +39,7 @@ class TgBounce:
     with open(f'{self.root_dir}/rules.json') as f:
       json_tree = json.load(f)
 
-      for name, subtree in json_tree['sessions'].items():
+      for name, subtree in json_tree.items():
         sessions.append(Session(name, subtree))
 
     cred = configparser.ConfigParser()
