@@ -1,0 +1,2 @@
+jq==1.6.0
+python-telegram==0.18.0
