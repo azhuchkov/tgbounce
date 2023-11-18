@@ -40,7 +40,7 @@ class TgBounce:
         with open(f'{self.root_dir}/rules.json') as f:
             json_tree = json.load(f)
 
-            session = Session('main', json_tree['handlers'])
+            session = Session('main', json_tree['bounces'])
 
         cred = configparser.ConfigParser()
         cred.read(f'{self.root_dir}/cred.ini')
