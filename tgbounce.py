@@ -7,8 +7,26 @@ import sys
 import os
 import configparser
 
-JQ_MAIN = jq.compile('.message|{id,chat_id,sender_id:.sender_id.user_id,is_outgoing,is_pinned,ttl,text:.content.text.text,reply_markup}')
-JQ_BUTTONS = jq.compile('[.reply_markup.rows[]|.[]|{label:.text,data:.type.data}]|map({(.label|tostring):.})|add')
+MSG_SLCTR = jq.compile('''
+.message
+  |{
+    id,
+    chat_id,
+    sender_id: .sender_id.user_id,
+    is_outgoing,
+    is_pinned,
+    ttl,
+    text: .content.text.text,
+    reply_markup}''')
+
+BTN_SLCTR = jq.compile('''
+[
+  .reply_markup.rows[]
+    | .[]
+    | { label: .text, data: .type.data }
+]
+  | map({ (.label|tostring):. })
+  | add''')
 
 class TgBounce:
   def __init__(self, root_dir):
@@ -28,6 +46,7 @@ class TgBounce:
     
     for session in sessions:
       conf = cred[session.name]
+
       tg = Telegram(
         api_id=conf['api_id'],
         api_hash=conf['api_hash'],
@@ -40,7 +59,8 @@ class TgBounce:
       )
       tg.login()
       tg.add_message_handler(
-        lambda e: session.on_message(Message(tg, JQ_MAIN.input_value(e).first())))
+        lambda e: session.on_message(
+          Message(tg, MSG_SLCTR.input_value(e).first())))
       tg.idle()
 
 class Message:
@@ -61,7 +81,7 @@ class Message:
     self.__tg.call_method("viewMessages", payload);
 
   def click(self, label):
-    buttons = JQ_BUTTONS.input_value(self.__msg).first()
+    buttons = BTN_SLCTR.input_value(self.__msg).first()
 
     params={
       'chat_id': self.chat_id, 
