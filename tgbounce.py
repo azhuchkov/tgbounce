@@ -34,34 +34,31 @@ class TgBounce:
     self.root_dir = root_dir
 
   def start(self):
-    sessions = []
+    session = None 
 
     with open(f'{self.root_dir}/rules.json') as f:
       json_tree = json.load(f)
 
-      for name, subtree in json_tree.items():
-        sessions.append(Session(name, subtree))
+      session = Session('main', json_tree['handlers'])
 
     cred = configparser.ConfigParser()
     cred.read(f'{self.root_dir}/cred.ini')
     
-    for session in sessions:
-      conf = cred[session.name]
+    conf = cred['main']
 
-      tg = Telegram(
-        api_id=conf['api_id'],
-        api_hash=conf['api_hash'],
-        phone=conf['phone_number'],
-        use_message_database=False,
-        use_secret_chats=False,
-        database_encryption_key=conf['enc_key'],
-        files_directory=
-          f'{self.root_dir}/sessions/{session.name}',
-      )
-      tg.login()
-      tg.add_message_handler(
-        lambda e: session.on_message(Message.build(e, tg)))
-      tg.idle()
+    tg = Telegram(
+      api_id=conf['api_id'],
+      api_hash=conf['api_hash'],
+      phone=conf['phone_number'],
+      use_message_database=False,
+      use_secret_chats=False,
+      database_encryption_key=conf['enc_key'],
+      files_directory=f'{self.root_dir}/session/',
+    )
+    tg.login()
+    tg.add_message_handler(
+      lambda e: session.on_message(Message.build(e, tg)))
+    tg.idle()
 
 class Message:
   def __init__(self, tg, msg):
