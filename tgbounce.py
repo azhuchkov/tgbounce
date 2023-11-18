@@ -15,6 +15,7 @@ MSG_SLCTR = jq.compile('''
     sender_id: .sender_id.user_id,
     is_outgoing,
     is_pinned,
+    is_channel_post,
     ttl,
     text: .content.text.text,
     reply_markup}''')
