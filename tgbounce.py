@@ -112,8 +112,12 @@ class Session:
         elif value != msg[attr]:
           break
       else:
-        for method, args in rule['do'].items():
-          getattr(msg, method)(*args)
+        for mname, args in rule['do'].items():
+          method = getattr(msg, mname)
+          if isinstance(args, dict):
+            method(**args)
+          else:
+            method(*args)
 
 if __name__ == '__main__':
     data_path = sys.argv[1] if len(sys.argv) > 1 \
