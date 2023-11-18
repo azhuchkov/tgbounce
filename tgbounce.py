@@ -96,6 +96,9 @@ class Message:
     }
     self.__tg.call_method('getCallbackQueryAnswer', params)
 
+  def log(self):
+    print(json.dumps(self.__msg, indent=2, ensure_ascii=False))
+
   def reply(self, text):
     raise Error('Not implemented')    
 
