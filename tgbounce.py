@@ -31,30 +31,32 @@ BTN_SLCTR = jq.compile('''
 
 
 class TgBounce:
-    def __init__(self, root_dir):
-        self.root_dir = root_dir
+    def __init__(self, config_path, profile):
+        self.config_path = config_path
+        self.profile = profile
 
     def start(self):
-        session = None
+        config_parser = configparser.ConfigParser()
+        config_parser.read(self.config_path)
 
-        with open(f'{self.root_dir}/rules.json') as f:
+        config = config_parser[self.profile]
+
+        def resolve_path(path):
+            return path if os.path.isabs(path) \
+                else os.path.dirname(os.path.abspath(self.config_path)) + '/' + path
+
+        with open(resolve_path(config['bounces_file'])) as f:
             json_tree = json.load(f)
-
             session = Session('main', json_tree['bounces'])
 
-        config = configparser.ConfigParser()
-        config.read(f'{self.root_dir}/config.ini')
-
-        cred = config['credentials']
-
         tg = Telegram(
-            api_id=int(cred['api_id']),
-            api_hash=cred['api_hash'],
-            phone=cred['phone_number'],
+            api_id=int(config['api_id']),
+            api_hash=config['api_hash'],
+            phone=config['phone_number'],
             use_message_database=False,
             use_secret_chats=False,
-            database_encryption_key=cred['enc_key'],
-            files_directory=f'{self.root_dir}/session/',
+            database_encryption_key=config['enc_key'],
+            files_directory=resolve_path(config['data_dir'])
         )
         tg.login()
         tg.add_message_handler(
@@ -137,8 +139,10 @@ class Session:
 
 
 if __name__ == '__main__':
-    data_path = sys.argv[1] if len(sys.argv) > 1 \
-        else os.path.expanduser('~/.tgbounce/')
+    profile = sys.argv[1] if len(sys.argv) > 1 else 'DEFAULT'
 
-    app = TgBounce(data_path)
+    config_path = sys.argv[2] if len(sys.argv) > 2 \
+        else os.path.expanduser('~/.tgbounce/config.ini')
+
+    app = TgBounce(config_path, profile)
     app.start()
