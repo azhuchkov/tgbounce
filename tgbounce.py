@@ -70,13 +70,14 @@ class Message:
         self.__tg = tg
         self.__msg = msg
         self.__dict__.update(msg)
+        self.__dict__['is_private'] = msg['chat_id'] >= 0
 
     @staticmethod
     def build(event, tg):
         return Message(tg, MSG_SLCTR.input_value(event).first())
 
     def __getitem__(self, item):
-        return self.__msg[item]
+        return self.__dict__[item]
 
     def mark_as_read(self):
         payload = {
