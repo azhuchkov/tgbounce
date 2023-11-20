@@ -126,7 +126,7 @@ class Session:
                 if isinstance(value, dict):
                     if value['matcher'] != 'regexp':
                         raise Exception(f'Unexpected matcher: {value}')
-                    elif not re.fullmatch(value['value'], msg[attr]):
+                    elif msg[attr] is None or not re.fullmatch(value['value'], msg[attr]):
                         break
                 elif value != msg[attr]:
                     break
