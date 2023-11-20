@@ -102,7 +102,7 @@ class Message:
     def log(self):
         print(json.dumps(self.__msg, indent=2, ensure_ascii=False))
 
-    def reply(self, text, receiver):
+    def reply(self, text, receiver=0):
         self.__tg.send_message(receiver or self.chat_id, text)
 
     def __call__(self, method, args):
