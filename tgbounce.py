@@ -4,17 +4,7 @@ import os
 import re
 import sys
 
-import jq
 from telegram.client import Telegram
-
-BTN_SLCTR = jq.compile('''
-[
-  .reply_markup.rows[]
-    | .[]
-    | { label: .text, data: .type.data }
-]
-  | map({ (.label|tostring):. })
-  | add''')
 
 
 class TgBounce:
@@ -70,17 +60,20 @@ class Message:
         self.__tg.call_method("viewMessages", payload)
 
     def click(self, label):
-        buttons = BTN_SLCTR.input_value(self.__msg).first()
-
-        params = {
-            'chat_id': self.chat_id,
-            'message_id': self.id,
-            'payload': {
-                '@type': 'callbackQueryPayloadData',
-                'data': buttons[label]['data'],
-            }
-        }
-        self.__tg.call_method('getCallbackQueryAnswer', params)
+        for row in self.__msg['reply_markup']['rows']:
+            for button in row:
+                if button['text'] == label:
+                    params = {
+                        'chat_id': self.chat_id,
+                        'message_id': self.id,
+                        'payload': {
+                            '@type': 'callbackQueryPayloadData',
+                            'data': button['type']['data'],
+                        }
+                    }
+                    self.__tg.call_method('getCallbackQueryAnswer', params)
+                    return
+        raise Exception(f'Button not found: {label}')
 
     def log(self):
         print(json.dumps(self.__msg, indent=2, ensure_ascii=False))
