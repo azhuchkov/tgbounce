@@ -4,6 +4,8 @@ import os
 import re
 import sys
 import logging
+import time
+import datetime
 
 from telegram.client import Telegram
 
@@ -155,7 +157,7 @@ class ExpressionCondition:
         self.expression = expression
 
     def is_fulfilled(self, msg):
-        return eval(self.expression, {}, msg)
+        return eval(self.expression, {'time': time, 'datetime': datetime}, msg)
 
     def __repr__(self):
         return f'{self.expression}'
