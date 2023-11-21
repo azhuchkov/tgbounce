@@ -77,7 +77,7 @@ class Message:
         raise Exception(f'Button not found: {label}')
 
     def log(self):
-        print(json.dumps(self.__msg, indent=2, ensure_ascii=False))
+        logging.info(f'MESSAGE:\n%s' % json.dumps(self.__msg, indent=2, ensure_ascii=False))
 
     def reply(self, text, receiver=0):
         self.__tg.send_message(receiver or self.chat_id, text)
