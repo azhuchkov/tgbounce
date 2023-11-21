@@ -37,8 +37,14 @@ class TgBounce:
             files_directory=resolve_path(config['data_dir'])
         )
         tg.login()
-        tg.add_message_handler(
-            lambda e: session.on_message(Message(tg, e['message'])))
+
+        def on_message(event):
+            try:
+                session.on_message(Message(tg, event['message']))
+            except:
+                logging.error("Error during message handling", exc_info=True)
+
+        tg.add_message_handler(on_message)
         tg.idle()
 
 
