@@ -7,19 +7,6 @@ import sys
 import jq
 from telegram.client import Telegram
 
-MSG_SLCTR = jq.compile('''
-.message
-  |{
-    id,
-    chat_id,
-    sender_id: .sender_id.user_id,
-    is_outgoing,
-    is_pinned,
-    is_channel_post,
-    message_thread_id,
-    ttl,
-    text: .content.text.text,
-    reply_markup}''')
 
 BTN_SLCTR = jq.compile('''
 [
@@ -61,7 +48,7 @@ class TgBounce:
         )
         tg.login()
         tg.add_message_handler(
-            lambda e: session.on_message(Message.build(e, tg)))
+            lambda e: session.on_message(Message(tg, e['message'])))
         tg.idle()
 
 
@@ -71,10 +58,6 @@ class Message:
         self.__msg = msg
         self.__dict__.update(msg)
         self.__dict__['is_private'] = msg['chat_id'] >= 0
-
-    @staticmethod
-    def build(event, tg):
-        return Message(tg, MSG_SLCTR.input_value(event).first())
 
     def __getitem__(self, item):
         return self.__dict__[item]
@@ -116,6 +99,18 @@ class Message:
             fn(args)
 
 
+def obj_attr(obj, attr_path):
+    try:
+        for attr in attr_path.split('.'):
+            if isinstance(obj, dict):
+                obj = obj[attr]
+            else:
+                obj = getattr(obj, attr)
+        return obj
+    except (AttributeError, KeyError, TypeError):
+        return None
+
+
 class Session:
     def __init__(self, name, rules):
         self.name = name
@@ -123,13 +118,14 @@ class Session:
 
     def on_message(self, msg):
         for rule in self.rules:
-            for attr, value in rule['on'].items():
-                if isinstance(value, dict):
-                    if value['matcher'] != 'regexp':
-                        raise Exception(f'Unexpected matcher: {value}')
-                    elif msg[attr] is None or not re.fullmatch(value['value'], msg[attr]):
+            for attr, expected in rule['on'].items():
+                actual = obj_attr(msg, attr)
+                if isinstance(expected, dict):
+                    if expected['matcher'] != 'regexp':
+                        raise Exception(f'Unexpected matcher: {expected}')
+                    elif actual is None or not re.fullmatch(expected['value'], actual):
                         break
-                elif value != msg[attr]:
+                elif expected != actual:
                     break
             else:
                 do = rule['do']
