@@ -25,7 +25,7 @@ class TgBounce:
 
         with open(resolve_path(config['bounces_file'])) as f:
             json_tree = json.load(f)
-            session = Session('main', json_tree['bounces'])
+            bounces = [Bounce.parse(b) for b in json_tree['bounces']]
 
         tg = Telegram(
             api_id=int(config['api_id']),
@@ -40,7 +40,8 @@ class TgBounce:
 
         def on_message(event):
             try:
-                session.on_message(Message(tg, event['message']))
+                for bounce in bounces:
+                    bounce.on_message(Message(tg, event['message']))
             except:
                 logging.error("Error during message handling", exc_info=True)
 
@@ -98,6 +99,28 @@ class Message:
             fn(args)
 
 
+class EqualityMatcher:
+    def __init__(self, expected):
+        self.expected = expected
+
+    def match(self, actual):
+        return self.expected == actual
+
+    def __repr__(self):
+        return f'== {self.expected}'
+
+
+class RegexpMatcher:
+    def __init__(self, regexp):
+        self.regexp = regexp
+
+    def match(self, actual):
+        return actual is not None and re.fullmatch(self.regexp, actual)
+
+    def __repr__(self):
+        return f'~ {self.regexp}'
+
+
 def obj_attr(obj, attr_path):
     """
     Tries to get nested attribute of an object as well as nested key of a dict.
@@ -116,30 +139,71 @@ def obj_attr(obj, attr_path):
         return None
 
 
-class Session:
-    def __init__(self, name, rules):
-        self.name = name
-        self.rules = rules
+class FieldCondition:
+    def __init__(self, attr_path, matcher):
+        self.attr_path = attr_path
+        self.matcher = matcher
+
+    def is_fulfilled(self, msg):
+        return self.matcher.match(obj_attr(msg, self.attr_path))
+
+    def __repr__(self):
+        return f'{self.attr_path} {self.matcher}'
+
+
+class Bounce:
+    def __init__(self, conditions, action):
+        self.conditions = conditions
+        self.action = action
+
+    def __str__(self):
+        return f'{self.conditions} -> {self.action}'
 
     def on_message(self, msg):
-        for rule in self.rules:
-            for attr, expected in rule['on'].items():
-                actual = obj_attr(msg, attr)
-                if isinstance(expected, dict):
-                    if expected['matcher'] != 'regexp':
-                        raise Exception(f'Unexpected matcher: {expected}')
-                    elif actual is None or not re.fullmatch(expected['value'], actual):
-                        break
-                elif expected != actual:
-                    break
-            else:
-                logging.info(f'MATCH: {msg.id} -- {rule}')
-                do = rule['do']
-                if isinstance(do, str):
-                    msg(do, [])
+        if all(cond.is_fulfilled(msg) for cond in self.conditions):
+            logging.info(f'MATCH: {msg.id} -- {self.conditions}')
+            self.action(msg)
+
+    @staticmethod
+    def parse(json_tree):
+        conds = []
+        for attr, matcher in json_tree['on'].items():
+            if isinstance(matcher, dict):
+                matcher_value = matcher['value']
+
+                if matcher['matcher'] in ('regexp', 'regex'):
+                    conds.append(FieldCondition(attr, RegexpMatcher(matcher_value)))
+
+                elif matcher['matcher'] in ('eq', 'equal', 'equals'):
+                    conds.append(FieldCondition(attr, EqualityMatcher(matcher_value)))
+
                 else:
-                    for method, args in do.items():
-                        msg(method, args)
+                    raise Exception(f'Unexpected matcher: {matcher}')
+            else:
+                conds.append(FieldCondition(attr, EqualityMatcher(matcher)))
+
+        do = json_tree['do']
+
+        supported_actions = [method for method in dir(Message) if not method.startswith('_')]
+
+        def check_supported(action):
+            if action not in supported_actions:
+                raise Exception(f'Unexpected action: {action}. Supported: {supported_actions}')
+
+        if isinstance(do, str):
+            check_supported(do)
+        else:
+            for method in do:
+                check_supported(method)
+
+        def action(msg):
+            if isinstance(do, str):
+                msg(do, [])
+            else:
+                for method, args in do.items():
+                    msg(method, args)
+
+        return Bounce(conds, action)
 
 
 if __name__ == '__main__':
