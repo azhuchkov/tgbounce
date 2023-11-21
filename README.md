@@ -9,7 +9,7 @@ To automatically respond to any private message that starts with `Hello`, the fo
     {
       "on": {
         "is_outgoing": false,
-        "is_private": true,
+        "is_private": { "value":  "chat_id >= 0", "matcher": "expr" },
         "content.text.text": { "value": "^Hello.*$", "matcher": "regexp" }
       },
       "do": {
@@ -18,6 +18,7 @@ To automatically respond to any private message that starts with `Hello`, the fo
     }
   ]
 }
+
 ```
 
 ## Installation
