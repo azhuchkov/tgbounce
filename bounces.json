@@ -4,7 +4,7 @@
       "on": {
         "is_outgoing": false,
         "is_private": true,
-        "text": { "value": "^Hello.*$", "matcher": "regexp" }
+        "content.text.text": { "value": "^Hello.*$", "matcher": "regexp" }
       },
       "do": {
         "reply": ["Hi. Will respond to you in a minute."]
