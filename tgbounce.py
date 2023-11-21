@@ -54,10 +54,9 @@ class Message:
         self.__tg = tg
         self.__msg = msg
         self.__dict__.update(msg)
-        self.__dict__['is_private'] = msg['chat_id'] >= 0
 
     def __getitem__(self, item):
-        return self.__dict__[item]
+        return self.__msg[item]
 
     def mark_as_read(self):
         payload = {
