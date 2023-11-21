@@ -3,6 +3,7 @@ import json
 import os
 import re
 import sys
+import logging
 
 from telegram.client import Telegram
 
@@ -126,6 +127,7 @@ class Session:
                 elif expected != actual:
                     break
             else:
+                logging.info(f'MATCH: {msg.id} -- {rule}')
                 do = rule['do']
                 if isinstance(do, str):
                     msg(do, [])
@@ -135,6 +137,9 @@ class Session:
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s - %(levelname)s - %(message)s')
+
     profile = sys.argv[1] if len(sys.argv) > 1 else 'DEFAULT'
 
     config_path = sys.argv[2] if len(sys.argv) > 2 \
