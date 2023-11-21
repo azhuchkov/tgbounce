@@ -7,7 +7,6 @@ import sys
 import jq
 from telegram.client import Telegram
 
-
 BTN_SLCTR = jq.compile('''
 [
   .reply_markup.rows[]
@@ -100,6 +99,12 @@ class Message:
 
 
 def obj_attr(obj, attr_path):
+    """
+    Tries to get nested attribute of an object as well as nested key of a dict.
+    :param obj: Object to get attribute from.
+    :param attr_path: Attribute name or path to it, e.g. 'a.b.c'.
+    :return: Attribute value or None if attribute doesn't exist.
+    """
     try:
         for attr in attr_path.split('.'):
             if isinstance(obj, dict):
