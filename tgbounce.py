@@ -90,6 +90,15 @@ class Message:
     def reply(self, text, receiver=0):
         self.__tg.send_message(receiver or self.chat_id, text)
 
+    def notify(self, text, subtitle=""):
+        try:
+            import subprocess
+            subprocess.call(
+                ["terminal-notifier", "-title", "TgBounce", "-subtitle", subtitle, "-message", text,
+                 "-activate", "ru.keepcoder.Telegram", "-sound", "default", "-ignoreDnD"])
+        except FileNotFoundError:
+            logging.warning("terminal-notifier not found, notification will not be shown")
+
     def __call__(self, method, args):
         fn = getattr(self, method)
         if isinstance(args, dict):
