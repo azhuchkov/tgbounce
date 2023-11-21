@@ -151,6 +151,17 @@ class FieldCondition:
         return f'{self.attr_path} {self.matcher}'
 
 
+class ExpressionCondition:
+    def __init__(self, expression):
+        self.expression = expression
+
+    def is_fulfilled(self, msg):
+        return eval(self.expression, {}, msg)
+
+    def __repr__(self):
+        return f'{self.expression}'
+
+
 class Bounce:
     def __init__(self, conditions, action):
         self.conditions = conditions
@@ -176,6 +187,9 @@ class Bounce:
 
                 elif matcher['matcher'] in ('eq', 'equal', 'equals'):
                     conds.append(FieldCondition(attr, EqualityMatcher(matcher_value)))
+
+                elif matcher['matcher'] in ('expr', 'expression'):
+                    conds.append(ExpressionCondition(matcher_value))
 
                 else:
                     raise Exception(f'Unexpected matcher: {matcher}')
