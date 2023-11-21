@@ -1,11 +1,11 @@
-from telegram.client import Telegram
-import jq
-
-import re
-import json
-import sys
-import os
 import configparser
+import json
+import os
+import re
+import sys
+
+import jq
+from telegram.client import Telegram
 
 MSG_SLCTR = jq.compile('''
 .message
@@ -85,7 +85,7 @@ class Message:
             "message_ids": [self.id],
             "force_read": True,
         }
-        self.__tg.call_method("viewMessages", payload);
+        self.__tg.call_method("viewMessages", payload)
 
     def click(self, label):
         buttons = BTN_SLCTR.input_value(self.__msg).first()
