@@ -188,24 +188,24 @@ class Bounce:
 
     @staticmethod
     def parse(json_tree):
-        conds = []
+        conditions = []
         for attr, matcher in json_tree['on'].items():
             if isinstance(matcher, dict):
                 matcher_value = matcher['value']
 
                 if matcher['matcher'] in ('regexp', 'regex'):
-                    conds.append(FieldCondition(attr, RegexpMatcher(matcher_value)))
+                    conditions.append(FieldCondition(attr, RegexpMatcher(matcher_value)))
 
                 elif matcher['matcher'] in ('eq', 'equal', 'equals'):
-                    conds.append(FieldCondition(attr, EqualityMatcher(matcher_value)))
+                    conditions.append(FieldCondition(attr, EqualityMatcher(matcher_value)))
 
                 elif matcher['matcher'] in ('expr', 'expression'):
-                    conds.append(ExpressionCondition(matcher_value))
+                    conditions.append(ExpressionCondition(matcher_value))
 
                 else:
                     raise Exception(f'Unexpected matcher: {matcher}')
             else:
-                conds.append(FieldCondition(attr, EqualityMatcher(matcher)))
+                conditions.append(FieldCondition(attr, EqualityMatcher(matcher)))
 
         do = json_tree['do']
 
@@ -228,7 +228,7 @@ class Bounce:
                 for method, args in do.items():
                     msg(method, args)
 
-        return Bounce(conds, action)
+        return Bounce(conditions, action)
 
 
 if __name__ == '__main__':
