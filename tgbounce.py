@@ -103,7 +103,7 @@ class Message:
         msg = obj_attr(self.__msg, path) if path else self.__msg
         logging.info(f'MESSAGE: %s' % json.dumps(msg, indent=2, ensure_ascii=False))
 
-    def reply(self, text, receiver=0):
+    def reply(self, text, receiver=None):
         self.__tg.send_message(receiver or self.__msg['chat_id'], text)
 
     def notify(self, text, subtitle=""):

@@ -69,7 +69,7 @@ Explore the wide range of message fields tgbounce can interact with in the [Tele
 ## Available actions
 Customize your reactions to messages with these actions in a `do` block:
 ```
-reply(text, receiver=0): Send a reply to the sender.
+reply(text, receiver=None): Send a reply to the sender.
 click(label): Click on a specified button or link.
 log(path=None): Log the message to a file.
 mark_as_read(): Mark the message as read.
