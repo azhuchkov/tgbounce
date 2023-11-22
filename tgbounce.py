@@ -6,6 +6,7 @@ import sys
 import logging
 import time
 import datetime
+import signal
 
 from telegram.client import Telegram
 
@@ -48,6 +49,14 @@ class TgBounce:
                 logging.error("Error during message handling", exc_info=True)
 
         tg.add_message_handler(on_message)
+
+        def on_signal(sig_num, frame):
+            sig_name = signal.Signals(sig_num).name
+            logging.info(f'Got signal: {sig_name}. Setting network type to reconnect...')
+            tg.call_method("setNetworkType")
+
+        signal.signal(signal.SIGUSR1, on_signal)
+
         tg.idle()
 
 
