@@ -51,14 +51,29 @@ class TgBounce:
         tg.idle()
 
 
+class AttrDict(dict):
+    def __getattr__(self, item):
+        return AttrDict.build(self.get(item))
+
+    @staticmethod
+    def build(obj):
+        if isinstance(obj, dict):
+            return AttrDict(obj)
+        return obj
+
+
 class Message:
     def __init__(self, tg, msg):
         self.__tg = tg
         self.__msg = msg
-        self.__dict__.update(msg)
 
     def __getitem__(self, item):
-        return self.__msg[item]
+        """Access source message via indexing, e.g. msg['id']"""
+        return AttrDict.build(self.__msg[item])
+
+    def __getattr__(self, item):
+        """Access source message via attributes, e.g. msg.id"""
+        return self.__getitem__(item)
 
     def mark_as_read(self):
         payload = {
