@@ -62,8 +62,8 @@ class Message:
 
     def mark_as_read(self):
         payload = {
-            "chat_id": self.chat_id,
-            "message_ids": [self.id],
+            "chat_id": self.__msg['chat_id'],
+            "message_ids": [self.__msg['id']],
             "force_read": True,
         }
         self.__tg.call_method("viewMessages", payload)
@@ -73,8 +73,8 @@ class Message:
             for button in row:
                 if button['text'] == label:
                     params = {
-                        'chat_id': self.chat_id,
-                        'message_id': self.id,
+                        'chat_id': self.__msg['chat_id'],
+                        'message_id': self.__msg['id'],
                         'payload': {
                             '@type': 'callbackQueryPayloadData',
                             'data': button['type']['data'],
@@ -88,7 +88,7 @@ class Message:
         logging.info(f'MESSAGE:\n%s' % json.dumps(self.__msg, indent=2, ensure_ascii=False))
 
     def reply(self, text, receiver=0):
-        self.__tg.send_message(receiver or self.chat_id, text)
+        self.__tg.send_message(receiver or self.__msg['chat_id'], text)
 
     def notify(self, text, subtitle=""):
         try:
