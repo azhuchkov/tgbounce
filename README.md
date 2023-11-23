@@ -15,8 +15,9 @@ Customize your reactions to messages with these reactions, which can be combined
 - **log(path=None)**: Logs data in JSON format, either from a specified path or the entire message.
 - **mark_as_read()**: Marks a message as read.
 - **notify(text, subtitle='')**: Sends a notification with an optional subtitle.
+- **exec(cmd)**: Executes a shell command. 
 
-## Example configuration
+## Examples
 Automate responses easily with tgbounce. For example, to reply to any private message starting with "Hello", use this configuration:
 ```json
 {
@@ -34,6 +35,23 @@ Automate responses easily with tgbounce. For example, to reply to any private me
   ]
 }
 
+```
+
+### Command execution
+Here is the bounce that sends every text message to the Notification Center:
+```json
+{
+  "on": {
+    "is_outgoing": false,
+    "has_text": {
+      "value": "content.text != None and content.text.text != None",
+      "matcher": "expr"
+    }
+  },
+  "do": {
+    "exec": ["jq -r .content.text.text | terminal-notifier -title 'Telegram' -subtitle 'Incoming Message'"]
+  }
+}
 ```
 
 ## Installation

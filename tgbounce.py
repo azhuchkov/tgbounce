@@ -7,6 +7,7 @@ import logging
 import time
 import datetime
 import signal
+import subprocess
 
 from telegram.client import Telegram
 
@@ -117,12 +118,15 @@ class Message:
 
     def notify(self, text, subtitle=""):
         try:
-            import subprocess
             subprocess.call(
                 ["terminal-notifier", "-title", "TgBounce", "-subtitle", subtitle, "-message", text,
                  "-activate", "ru.keepcoder.Telegram", "-sound", "default", "-ignoreDnD"])
         except FileNotFoundError:
             logging.warning("terminal-notifier not found, notification will not be shown")
+
+    def exec(self, cmd):
+        subprocess.run(cmd, shell=True, input=json.dumps(self.__msg).encode('utf-8'),
+                       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     def __call__(self, method, args):
         fn = getattr(self, method)
