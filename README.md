@@ -125,4 +125,4 @@ $ less /usr/local/var/log/tgbounce.log
 ```
 
 ## Legal Information
-`tgbounce` is licensed under the [MIT License](LICENSE).
+`tgbounce` is licensed under the [GPLv3 License](LICENSE).
