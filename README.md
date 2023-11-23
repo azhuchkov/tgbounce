@@ -4,17 +4,18 @@ It responds to messages, logs conversations, clicks buttons, and executes custom
 your Telegram experience with seamless efficiency.
 
 ## Application Model
-`tgbounce` operates on **bounces**, rules created to respond to messages. Each bounce includes conditions and related 
-actions. These conditions are appraised using matchers, ranging from basic field value comparisons to intricate 
-expression evaluations. Explore the extensive message fields compatible with `tgbounce` in the 
-[Telegram documentation](https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1message.html).
+`tgbounce` works with **bounces**, which are special rules set up to reply to messages. Each bounce has two parts: 
+_conditions_ and _actions_. Conditions are the rules that decide when to do something, and actions are what `tgbounce`
+does when those conditions are met. To check if a condition is true, `tgbounce` uses _matchers_. These can be simple 
+checks or more complex evaluations. You can find out about the different kinds of fields `tgbounce` can work with 
+by looking at the [Telegram documentation](https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1message.html).
 
 ### Available actions
 Specify your reactions to messages with the following actions, which can be used in any combination:
 - **reply(text, receiver=None)**: Sends a reply, optionally to a different receiver.
 - **click(label)**: Clicks a button identified by its label.
 - **mark_as_read()**: Marks a message as read.
-- **exec(cmd)**: Executes a shell command, passing the message to process STDIN in JSON format. 
+- **exec(cmd)**: Executes a shell command, passing the message to the process' STDIN in JSON format. 
 
 ## Examples
 
@@ -59,7 +60,7 @@ use the following config:
 ```
 
 ### Command execution
-Here is the **bounce** that sends every text message to the macOS Notification Center:
+Here is the **bounce** that sends every text message to the [macOS Notification Center](https://support.apple.com/en-ge/guide/mac-help/mchl2fb1258f/14.0/mac/14.0):
 ```json
 {
   "on": {
@@ -78,7 +79,7 @@ Here is the **bounce** that sends every text message to the macOS Notification C
 ## Installation
 Follow these steps to install tgbounce:
 
-1. Install the latest version using Homebrew: 
+1. Install the latest version using [Homebrew](https://brew.sh/): 
 ```console
 $ brew install --HEAD azhuchkov/tools/tgbounce
 ```
