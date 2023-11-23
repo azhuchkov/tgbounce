@@ -10,6 +10,8 @@ import signal
 
 from telegram.client import Telegram
 
+log = logging.getLogger("tgbounce")
+
 
 class TgBounce:
     def __init__(self, config_path, profile):
@@ -46,13 +48,13 @@ class TgBounce:
                 for bounce in bounces:
                     bounce.on_message(Message(tg, event['message']))
             except:
-                logging.error("Error during message handling", exc_info=True)
+                log.error("Error during message handling", exc_info=True)
 
         tg.add_message_handler(on_message)
 
         def on_signal(sig_num, frame):
             sig_name = signal.Signals(sig_num).name
-            logging.info(f'Got signal: {sig_name}. Setting network type to reconnect...')
+            log.info(f'Got signal: {sig_name}. Setting network type to reconnect...')
             tg.call_method("setNetworkType")
 
         signal.signal(signal.SIGUSR1, on_signal)
@@ -163,7 +165,7 @@ def obj_attr(obj, attr_path):
                 obj = getattr(obj, attr)
         return obj
     except (AttributeError, KeyError, TypeError):
-        logging.warning(f'Attribute not found: {attr_path}', exc_info=True)
+        log.debug(f'Attribute not found: {attr_path}', exc_info=True)
         return None
 
 
@@ -200,7 +202,7 @@ class Bounce:
 
     def on_message(self, msg):
         if all(cond.is_fulfilled(msg) for cond in self.conditions):
-            logging.info(f'MATCH: {msg.id} -- {self.conditions}')
+            log.debug(f'MATCH: {msg.id} -- {self.conditions}')
             self.action(msg)
 
     @staticmethod
@@ -250,7 +252,9 @@ class Bounce:
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s - %(levelname)s - %(message)s')
+                        format='%(asctime)s - %(levelname)s - %(name)s - %(message)s')
+
+    log.setLevel(logging.DEBUG)
 
     profile = sys.argv[1] if len(sys.argv) > 1 else 'DEFAULT'
 
