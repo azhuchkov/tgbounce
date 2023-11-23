@@ -7,7 +7,6 @@ import logging
 import time
 import datetime
 import signal
-import subprocess
 
 from telegram.client import Telegram
 
@@ -109,22 +108,11 @@ class Message:
                     return
         raise Exception(f'Button not found: {label}')
 
-    def log(self, path=None):
-        msg = obj_attr(self.__msg, path) if path else self.__msg
-        logging.info(f'MESSAGE: %s' % json.dumps(msg, indent=2, ensure_ascii=False))
-
     def reply(self, text, receiver=None):
         self.__tg.send_message(receiver or self.__msg['chat_id'], text)
 
-    def notify(self, text, subtitle=""):
-        try:
-            subprocess.call(
-                ["terminal-notifier", "-title", "TgBounce", "-subtitle", subtitle, "-message", text,
-                 "-activate", "ru.keepcoder.Telegram", "-sound", "default", "-ignoreDnD"])
-        except FileNotFoundError:
-            logging.warning("terminal-notifier not found, notification will not be shown")
-
     def exec(self, cmd):
+        import subprocess
         subprocess.run(cmd, shell=True, input=json.dumps(self.__msg).encode('utf-8'),
                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 

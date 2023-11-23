@@ -12,9 +12,7 @@ expression evaluations. Explore the extensive message fields compatible with `tg
 Customize your reactions to messages with these reactions, which can be combined in any order:
 - **reply(text, receiver=None)**: Sends a reply, optionally to a different receiver.
 - **click(label)**: Clicks a button identified by its label.
-- **log(path=None)**: Logs data in JSON format, either from a specified path or the entire message.
 - **mark_as_read()**: Marks a message as read.
-- **notify(text, subtitle='')**: Sends a notification with an optional subtitle.
 - **exec(cmd)**: Executes a shell command. 
 
 ## Examples
@@ -52,14 +50,8 @@ To click automatically on buttons, use the following config:
       },
       "do": {
         "click": ["Yes"],
-        "notify": ["Bot request has been confirmed."]
+        "mark_as_read": []
       }
-    },
-    {
-      "on": {
-        "sender_id.user_id": 1234567890
-      },
-      "do": "mark_as_read"
     }
   ]
 }
