@@ -18,7 +18,10 @@ Customize your reactions to messages with these reactions, which can be combined
 - **exec(cmd)**: Executes a shell command. 
 
 ## Examples
-Automate responses easily with tgbounce. For example, to reply to any private message starting with "Hello", use this configuration:
+
+### Automatic reply
+Automate responses easily with `tgbounce`. For example, to reply to any private message starting with "Hello", 
+use this configuration:
 ```json
 {
   "bounces": [
@@ -37,8 +40,33 @@ Automate responses easily with tgbounce. For example, to reply to any private me
 
 ```
 
+### Buttons handling
+To click automatically on buttons, use the following config:
+```json
+{
+  "bounces": [
+    {
+      "on": {
+        "sender_id.user_id": 1234567890, 
+        "content.text.text": { "value": "^Are you confirming .+?$", "matcher": "regexp" }
+      },
+      "do": {
+        "click": ["Yes"],
+        "notify": ["Bot request has been confirmed."]
+      }
+    },
+    {
+      "on": {
+        "sender_id.user_id": 1234567890
+      },
+      "do": "mark_as_read"
+    }
+  ]
+}
+```
+
 ### Command execution
-Here is the bounce that sends every text message to the Notification Center:
+Here is the **bounce** that sends every text message to the Notification Center:
 ```json
 {
   "on": {
