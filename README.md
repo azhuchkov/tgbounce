@@ -1,5 +1,20 @@
 # tgbounce: Your Telegram Assistant
-**tgbounce** is a versatile [Telegram](https://telegram.org) assistant designed to automate responses, log messages, click on buttons, and perform various actions based on your custom rules, acting on your behalf in Telegram chats.
+**tgbounce** is a versatile [Telegram](https://telegram.org) assistant designed to automate responses, log messages, 
+click on buttons, and perform various actions based on your custom rules, acting on your behalf in Telegram chats.
+
+## Application Model
+`tgbounce` operates on **bounces**, rules created to respond to messages. Each bounce includes conditions and related 
+actions. These conditions are appraised using matchers, ranging from basic field value comparisons to intricate 
+expression evaluations. Explore the extensive message fields compatible with `tgbounce` in the 
+[Telegram documentation](https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1message.html).
+
+### Available actions
+Customize your reactions to messages with these reactions, which can be combined in any order:
+- **reply(text, receiver=None)**: Sends a reply, optionally to a different receiver.
+- **click(label)**: Clicks a button identified by its label.
+- **log(path=None)**: Logs data in JSON format, either from a specified path or the entire message.
+- **mark_as_read()**: Marks a message as read.
+- **notify(text, subtitle='')**: Sends a notification with an optional subtitle.
 
 ## Example configuration
 Automate responses easily with tgbounce. For example, to reply to any private message starting with "Hello", use this configuration:
@@ -63,15 +78,5 @@ $ brew services info tgbounce
 $ less /usr/local/var/log/tgbounce.log
 ```
 
-## Message object
-Explore the wide range of message fields tgbounce can interact with in the [Telegram documentation](https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1message.html).
-
-## Available actions
-Customize your reactions to messages with these actions in a `do` block:
-```
-reply(text, receiver=None): Send a reply to the sender.
-click(label): Click on a specified button or link.
-log(path=None): Log the message to a file.
-mark_as_read(): Mark the message as read.
-notify(text, subtitle=''): Send a notification with optional subtitle.
-```
+## Legal Information
+`tgbounce` is licensed under the [MIT License](LICENSE).
