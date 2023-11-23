@@ -1,6 +1,7 @@
 # tgbounce: Your Telegram Assistant
-**tgbounce** is a versatile [Telegram](https://telegram.org) assistant designed to automate responses, log messages, 
-click on buttons, and perform various actions based on your custom rules, acting on your behalf in Telegram chats.
+**tgbounce** is an advanced [Telegram](https://telegram.org) assistant, crafted to automate your chat interactions. 
+It responds to messages, logs conversations, clicks buttons, and executes custom actions on your behalf, enhancing 
+your Telegram experience with seamless efficiency.
 
 ## Application Model
 `tgbounce` operates on **bounces**, rules created to respond to messages. Each bounce includes conditions and related 
@@ -9,17 +10,16 @@ expression evaluations. Explore the extensive message fields compatible with `tg
 [Telegram documentation](https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1message.html).
 
 ### Available actions
-Customize your reactions to messages with these reactions, which can be combined in any order:
+Specify your reactions to messages with the following actions, which can be used in any combination:
 - **reply(text, receiver=None)**: Sends a reply, optionally to a different receiver.
 - **click(label)**: Clicks a button identified by its label.
 - **mark_as_read()**: Marks a message as read.
-- **exec(cmd)**: Executes a shell command. 
+- **exec(cmd)**: Executes a shell command, passing the message to process STDIN in JSON format. 
 
 ## Examples
 
 ### Automatic reply
-Automate responses easily with `tgbounce`. For example, to reply to any private message starting with "Hello", 
-use this configuration:
+To reply to any private message starting with "Hello", use this configuration:
 ```json
 {
   "bounces": [
@@ -39,7 +39,8 @@ use this configuration:
 ```
 
 ### Buttons handling
-To click automatically on buttons, use the following config:
+To click automatically on button "Yes" attached to special messages from a particular user, 
+use the following config:
 ```json
 {
   "bounces": [
@@ -58,7 +59,7 @@ To click automatically on buttons, use the following config:
 ```
 
 ### Command execution
-Here is the **bounce** that sends every text message to the Notification Center:
+Here is the **bounce** that sends every text message to the macOS Notification Center:
 ```json
 {
   "on": {
