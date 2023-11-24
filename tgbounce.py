@@ -14,29 +14,31 @@ log = logging.getLogger("tgbounce")
 
 
 class TgBounce:
-    def __init__(self, config_path, profile):
-        self.config_path = config_path
-        self.profile = profile
+    def __init__(self, config):
+        self.config = config
+
+        self.__tg = None
         self.__bounces = []
 
+    def on_network_change(self):
+        self.__tg.call_method("setNetworkType")
+
+    def on_bounces_change(self):
+        with open(self.config['bounces_file']) as f:
+            self.__bounces = [Bounce.parse(b) for b in json.load(f)['bounces']]
+
+    def __on_new_message(self, event):
+        message_ = event['message']
+        log.debug("NEW MESSAGE: %s", message_)
+        try:
+            for bounce in self.__bounces:
+                bounce.on_message(Message(self.__tg, message_))
+        except:
+            log.error("Error during message handling", exc_info=True)
+
     def start(self):
-        config_parser = configparser.ConfigParser()
-        config_parser.read(self.config_path)
-
-        config = config_parser[self.profile]
-
-        def resolve_path(path):
-            return path if os.path.isabs(path) \
-                else os.path.dirname(os.path.abspath(self.config_path)) + '/' + path
-
-        def read_bounces():
-            with open(resolve_path(config['bounces_file'])) as f:
-                json_tree = json.load(f)
-                return [Bounce.parse(b) for b in json_tree['bounces']]
-
-        self.__bounces = read_bounces()
-
-        tg = Telegram(
+        self.on_bounces_change()
+        tg = self.__tg = Telegram(
             api_id=int(config['api_id']),
             api_hash=config['api_hash'],
             phone=config['phone_number'],
@@ -46,30 +48,7 @@ class TgBounce:
             files_directory=resolve_path(config['data_dir'])
         )
         tg.login()
-
-        def on_message(event):
-            try:
-                for bounce in self.__bounces:
-                    bounce.on_message(Message(tg, event['message']))
-            except:
-                log.error("Error during message handling", exc_info=True)
-
-        tg.add_message_handler(on_message)
-
-        def on_sigusr1():
-            log.info('Setting network type to reconnect...')
-            tg.call_method("setNetworkType")
-
-        signal.signal(signal.SIGUSR1, lambda *_: on_sigusr1())
-
-        def on_sighup():
-            log.info('Reloading bounces...')
-            self.__bounces = read_bounces()
-
-        signal.signal(signal.SIGHUP, lambda *_: on_sighup())
-
-        log.info(f'[PID:{os.getpid()}] Listening for messages...')
-
+        tg.add_message_handler(self.__on_new_message)
         tg.idle()
 
 
@@ -268,12 +247,47 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s - %(levelname)s - %(name)s - %(message)s')
 
-    log.setLevel(logging.DEBUG)
+    if "-debug" in sys.argv:
+        log.setLevel(logging.DEBUG)
 
     profile = sys.argv[1] if len(sys.argv) > 1 else 'DEFAULT'
 
     config_path = sys.argv[2] if len(sys.argv) > 2 \
         else os.path.expanduser('~/.tgbounce/config.ini')
 
-    app = TgBounce(config_path, profile)
+    config_parser = configparser.ConfigParser()
+    config_parser.read(config_path)
+
+    config = config_parser[profile]
+
+
+    def resolve_path(path):
+        return path if os.path.isabs(path) \
+            else os.path.dirname(os.path.abspath(config_path)) + '/' + path
+
+
+    config['data_dir'] = resolve_path(config['data_dir'])
+    config['bounces_file'] = resolve_path(config['bounces_file'])
+
+    app = TgBounce(config)
+
+
+    def on_sigusr1():
+        log.info('Updating network settings...')
+        app.on_network_change()
+
+
+    signal.signal(signal.SIGUSR1, lambda *_: on_sigusr1())
+
+
+    def on_sighup():
+        log.info('Reloading bounces configuration...')
+        app.on_bounces_change()
+
+
+    signal.signal(signal.SIGHUP, lambda *_: on_sighup())
+
+    pid = os.getpid()
+    log.info(f'Starting the application[PID:{pid}]...')
+
     app.start()
