@@ -81,7 +81,7 @@ Follow these steps to install tgbounce:
 
 1. Install the latest version using [Homebrew](https://brew.sh/): 
 ```console
-$ brew install --HEAD azhuchkov/tools/tgbounce
+$ brew install azhuchkov/tools/tgbounce
 ```
 
 2. Create a directory for configuration files and copy the example files into it:
