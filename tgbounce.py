@@ -278,7 +278,10 @@ if __name__ == '__main__':
 
     def on_sighup():
         log.info('Reloading bounces configuration...')
-        app.on_bounces_change()
+        try:
+            app.on_bounces_change()
+        except:
+            log.error("Failed to reload bounces", exc_info=True)
 
 
     signal.signal(signal.SIGHUP, lambda *_: on_sighup())
