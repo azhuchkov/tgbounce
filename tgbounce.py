@@ -17,6 +17,7 @@ class TgBounce:
     def __init__(self, config_path, profile):
         self.config_path = config_path
         self.profile = profile
+        self.__bounces = []
 
     def start(self):
         config_parser = configparser.ConfigParser()
@@ -28,9 +29,12 @@ class TgBounce:
             return path if os.path.isabs(path) \
                 else os.path.dirname(os.path.abspath(self.config_path)) + '/' + path
 
-        with open(resolve_path(config['bounces_file'])) as f:
-            json_tree = json.load(f)
-            bounces = [Bounce.parse(b) for b in json_tree['bounces']]
+        def read_bounces():
+            with open(resolve_path(config['bounces_file'])) as f:
+                json_tree = json.load(f)
+                return [Bounce.parse(b) for b in json_tree['bounces']]
+
+        self.__bounces = read_bounces()
 
         tg = Telegram(
             api_id=int(config['api_id']),
@@ -45,19 +49,26 @@ class TgBounce:
 
         def on_message(event):
             try:
-                for bounce in bounces:
+                for bounce in self.__bounces:
                     bounce.on_message(Message(tg, event['message']))
             except:
                 log.error("Error during message handling", exc_info=True)
 
         tg.add_message_handler(on_message)
 
-        def on_signal(sig_num, frame):
-            sig_name = signal.Signals(sig_num).name
-            log.info(f'Got signal: {sig_name}. Setting network type to reconnect...')
+        def on_sigusr1():
+            log.info('Setting network type to reconnect...')
             tg.call_method("setNetworkType")
 
-        signal.signal(signal.SIGUSR1, on_signal)
+        signal.signal(signal.SIGUSR1, lambda *_: on_sigusr1())
+
+        def on_sighup():
+            log.info('Reloading bounces...')
+            self.__bounces = read_bounces()
+
+        signal.signal(signal.SIGHUP, lambda *_: on_sighup())
+
+        log.info(f'[PID:{os.getpid()}] Listening for messages...')
 
         tg.idle()
 
