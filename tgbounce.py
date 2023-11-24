@@ -180,7 +180,6 @@ def obj_attr(obj, attr_path):
                 obj = getattr(obj, attr)
         return obj
     except (AttributeError, KeyError, TypeError):
-        log.debug(f'Attribute not found: {attr_path}', exc_info=True)
         return None
 
 
