@@ -45,7 +45,7 @@ class TgBounce:
             use_message_database=False,
             use_secret_chats=False,
             database_encryption_key=config['enc_key'],
-            files_directory=resolve_path(config['data_dir'])
+            files_directory=config['data_dir']
         )
         tg.login()
         tg.add_message_handler(self.__on_new_message)
@@ -244,6 +244,8 @@ class Bounce:
 
 
 if __name__ == '__main__':
+    from pathlib import Path
+
     logging.basicConfig(level=logging.DEBUG if "-vv" in sys.argv else logging.INFO,
                         format='%(asctime)s - %(levelname)s - %(name)s - %(message)s')
 
@@ -252,22 +254,16 @@ if __name__ == '__main__':
 
     profile = sys.argv[1] if len(sys.argv) > 1 else 'DEFAULT'
 
-    config_path = sys.argv[2] if len(sys.argv) > 2 \
-        else os.path.expanduser('~/.tgbounce/config.ini')
+    config_path = Path(sys.argv[2]) if len(sys.argv) > 2 \
+        else Path('~/.tgbounce/config.ini').expanduser()
 
     config_parser = configparser.ConfigParser()
     config_parser.read(config_path)
 
     config = config_parser[profile]
 
-
-    def resolve_path(path):
-        return path if os.path.isabs(path) \
-            else os.path.dirname(os.path.abspath(config_path)) + '/' + path
-
-
-    config['data_dir'] = resolve_path(config['data_dir'])
-    config['bounces_file'] = resolve_path(config['bounces_file'])
+    for param in ['data_dir', 'bounces_file']:
+        config[param] = str(config_path.parent.joinpath(config[param]))
 
     app = TgBounce(config)
 
