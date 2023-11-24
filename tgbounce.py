@@ -87,6 +87,7 @@ class Message:
         return self.__getitem__(item)
 
     def mark_as_read(self):
+        """Marks message as read."""
         payload = {
             "chat_id": self.__msg['chat_id'],
             "message_ids": [self.__msg['id']],
@@ -94,7 +95,8 @@ class Message:
         }
         self.__tg.call_method("viewMessages", payload)
 
-    def click(self, label):
+    def click(self, label: str):
+        """Clicks a button identified by the label."""
         for row in self.__msg['reply_markup']['rows']:
             for button in row:
                 if button['text'] == label:
@@ -110,10 +112,12 @@ class Message:
                     return
         raise Exception(f'Button not found: {label}')
 
-    def reply(self, text, receiver=None):
+    def reply(self, text: str, receiver: int = None):
+        """Sends a reply, optionally to a different receiver."""
         self.__tg.send_message(receiver or self.__msg['chat_id'], text)
 
-    def exec(self, cmd):
+    def exec(self, cmd: str):
+        """Executes a shell command, passing the message to the process' STDIN in JSON format."""
         import subprocess
         subprocess.run(cmd, shell=True, input=json.dumps(self.__msg).encode('utf-8'),
                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
