@@ -244,10 +244,10 @@ class Bounce:
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO,
+    logging.basicConfig(level=logging.DEBUG if "-vv" in sys.argv else logging.INFO,
                         format='%(asctime)s - %(levelname)s - %(name)s - %(message)s')
 
-    if "-debug" in sys.argv:
+    if "-v" in sys.argv:
         log.setLevel(logging.DEBUG)
 
     profile = sys.argv[1] if len(sys.argv) > 1 else 'DEFAULT'
