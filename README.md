@@ -118,5 +118,9 @@ $ brew services info tgbounce
 $ less /usr/local/var/log/tgbounce.log
 ```
 
+## Signals
+`tgbounce` supports the following signals: `SIGUSR1`, `SIGHUP`. The latter is used to reload the bounces configuration, 
+and the former is used to notify the process about network changes for faster catch-up.
+
 ## Legal Information
 `tgbounce` is licensed under the [GPLv3 License](LICENSE).
