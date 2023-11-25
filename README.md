@@ -100,7 +100,7 @@ $ vim ~/.tgbounce/config.ini
 $ /usr/local/opt/tgbounce/libexec/bin/python3 /usr/local/opt/tgbounce/libexec/tgbounce.py
 ```
 
-5. After configuration, start tgbounce as a service:
+5. After entering credentials, exit (`Ctrl+C`) and then start tgbounce as a service:
 ```console
 $ brew services start tgbounce
 ```
