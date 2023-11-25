@@ -1,5 +1,5 @@
 import inspect
-import tgbounce
+from src import tgbounce
 
 methods = inspect.getmembers(tgbounce.Message,
                              predicate=lambda x: inspect.isfunction(x) and not x.__name__.startswith("_"))
