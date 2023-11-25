@@ -118,6 +118,11 @@ $ brew services info tgbounce
 $ less /usr/local/var/log/tgbounce.log
 ```
 
+- Reinstall the service, if any failures appear:
+```console
+$ brew uninstall tgbounce; brew install tgbounce; brew services restart tgbounce
+```
+
 ## Signals
 `tgbounce` supports the following signals: `SIGUSR1`, `SIGHUP`. The latter is used to reload the bounces configuration, 
 and the former is used to notify the process about network changes for faster catch-up.
