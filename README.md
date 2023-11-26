@@ -1,7 +1,10 @@
 # tgbounce: Your Telegram Assistant
+<img src="https://github.com/azhuchkov/tgbounce/assets/765471/ec1fca93-22b9-426e-8292-89789c161882" alt="logo" align="right"/>
+
 **tgbounce** is an advanced [Telegram](https://telegram.org) assistant, crafted to automate your chat interactions. 
 It responds to messages, logs conversations, clicks buttons, and executes custom actions on your behalf, enhancing 
 your Telegram experience with seamless efficiency.
+<br clear="right"/>
 
 ## Application Model
 `tgbounce` works with **bounces**, which are special rules set up to reply to messages. Each bounce has two parts: 
@@ -100,7 +103,7 @@ $ vim ~/.tgbounce/config.ini
 $ /usr/local/opt/tgbounce/libexec/bin/python3 /usr/local/opt/tgbounce/libexec/tgbounce.py
 ```
 
-5. After configuration, start tgbounce as a service:
+5. After entering credentials, exit (`Ctrl+C`) and then start tgbounce as a service:
 ```console
 $ brew services start tgbounce
 ```
