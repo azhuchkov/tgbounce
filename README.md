@@ -1,7 +1,10 @@
 # tgbounce: Your Telegram Assistant
+<img src="https://github.com/azhuchkov/tgbounce/assets/765471/56e14a73-7d4f-4dd7-ace0-2ad5170ba61a" alt="logo" align="right"/>
+
 **tgbounce** is an advanced [Telegram](https://telegram.org) assistant, crafted to automate your chat interactions. 
 It responds to messages, logs conversations, clicks buttons, and executes custom actions on your behalf, enhancing 
 your Telegram experience with seamless efficiency.
+<br clear="right"/>
 
 ## Application Model
 `tgbounce` works with **bounces**, which are special rules set up to reply to messages. Each bounce has two parts: 
