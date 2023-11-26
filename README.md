@@ -130,5 +130,5 @@ $ brew uninstall tgbounce; brew install tgbounce; brew services restart tgbounce
 `tgbounce` supports the following signals: `SIGUSR1`, `SIGHUP`. The latter is used to reload the bounces configuration, 
 and the former is used to notify the process about network changes for faster catch-up.
 
-## Legal Information
+## License
 `tgbounce` is licensed under the [GPLv3 License](LICENSE).
