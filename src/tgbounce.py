@@ -76,6 +76,14 @@ class Message:
         """Access source message via attributes, e.g. msg.id"""
         return self.__getitem__(item)
 
+    def delete(self, revoke: bool = False):
+        """Deletes message."""
+        self.__tg.call_method("deleteMessages", {
+            "chat_id": self.__msg['chat_id'],
+            "message_ids": [self.__msg['id']],
+            "revoke": revoke,
+        })
+
     def mark_as_read(self):
         """Marks message as read."""
         payload = {
