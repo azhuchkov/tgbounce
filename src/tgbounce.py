@@ -187,7 +187,10 @@ class ExpressionCondition:
         self.expression = expression
 
     def is_fulfilled(self, msg):
-        return eval(self.expression, {'time': time, 'datetime': datetime}, msg)
+        try:
+            return eval(self.expression, {'time': time, 'datetime': datetime}, msg)
+        except NameError as e:
+            log.debug(f"Name not found in the received message: '{e.name}'")
 
     def __repr__(self):
         return f'{self.expression}'
