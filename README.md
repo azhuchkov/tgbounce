@@ -15,10 +15,11 @@ by looking at the [Telegram documentation](https://core.telegram.org/tdlib/docs/
 
 ### Available actions
 Specify your reactions to messages with the following actions, which can be used in any combination:
-- **reply(text, receiver=None)**: Sends a reply, optionally to a different receiver.
+- **reply(text, receiver: int = None)**: Sends a reply, optionally to a different receiver.
 - **click(label)**: Clicks a button identified by its label.
 - **mark_as_read()**: Marks a message as read.
-- **exec(cmd)**: Executes a shell command, passing the message to the process' STDIN in JSON format. 
+- **exec(cmd)**: Executes a shell command, passing the message to the process' STDIN in JSON format.
+- **delete(revoke: bool = False)**: Deletes message.
 
 ## Examples
 
@@ -75,6 +76,20 @@ Here is the **bounce** that sends every text message to the [macOS Notification 
   },
   "do": {
     "exec": ["jq -r .content.text.text | terminal-notifier -title 'Telegram' -subtitle 'Incoming Message'"]
+  }
+}
+```
+
+### Message deletion
+Delete forwarded messages from a particular user (for both participants):
+```json
+{
+  "on": {
+    "sender_id.user_id": 192830138,
+    "is_forwarded": { "value": "forward_info != None", "matcher": "expr" }
+  },
+  "do": {
+    "delete": {"revoke": true}
   }
 }
 ```
