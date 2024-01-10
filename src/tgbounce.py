@@ -78,11 +78,7 @@ class Message:
 
     def delete(self, revoke: bool = False):
         """Deletes message."""
-        self.__tg.call_method("deleteMessages", {
-            "chat_id": self.__msg['chat_id'],
-            "message_ids": [self.__msg['id']],
-            "revoke": revoke,
-        })
+        self.__tg.delete_messages(self.__msg['chat_id'], [self.__msg['id']], revoke)
 
     def mark_as_read(self):
         """Marks message as read."""
