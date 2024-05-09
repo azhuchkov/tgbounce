@@ -105,7 +105,7 @@ $ brew install azhuchkov/tools/tgbounce
 2. Create a directory for configuration files and copy the example files into it:
 ```console
 $ mkdir -m 0700 ~/.tgbounce/ && \
-  install -b -m 0600 /usr/local/opt/tgbounce/share/{config.ini,bounces.json} ~/.tgbounce/
+  install -b -m 0600 $(brew --prefix)/opt/tgbounce/share/{config.ini,bounces.json} ~/.tgbounce/
 ```
 
 3. Edit the main configuration file:
@@ -115,7 +115,7 @@ $ vim ~/.tgbounce/config.ini
 
 4. Start tgbounce manually to enter the required credentials:
 ```console
-$ /usr/local/opt/tgbounce/libexec/bin/python3 /usr/local/opt/tgbounce/libexec/tgbounce.py
+$ $(brew --prefix)/opt/tgbounce/libexec/bin/python3 $(brew --prefix)/opt/tgbounce/libexec/tgbounce.py
 ```
 
 5. After entering credentials, exit (`Ctrl+C`) and then start tgbounce as a service:
@@ -133,7 +133,7 @@ $ brew services info tgbounce
 
 - Access the logs:
 ```console
-$ less /usr/local/var/log/tgbounce.log
+$ less $(brew --prefix)/var/log/tgbounce.log
 ```
 
 - Reinstall the service, if any failures appear:
