@@ -17,9 +17,9 @@ by looking at the [Telegram documentation](https://core.telegram.org/tdlib/docs/
 Specify your reactions to messages with the following actions, which can be used in any combination:
 - **reply(text, receiver: int = None)**: Sends a reply, optionally to a different receiver.
 - **click(label)**: Clicks a button identified by its label.
-- **mark_as_read()**: Marks a message as read.
+- **mark_as_read()**: Marks the message as read.
 - **exec(cmd)**: Executes a shell command, passing the message to the process' STDIN in JSON format.
-- **delete(revoke: bool = False)**: Deletes message.
+- **delete(revoke: bool = False)**: Deletes the message.
 
 ## Examples
 
